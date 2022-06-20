@@ -1,7 +1,6 @@
 const UserModel = require("../models/user_model");
 const TokenModel = require("../models/token_model");
 const sendEmail = require("../utils/sendEmail");
-const crypto = require("crypto");
 const express = require("express");
 const router = express.Router();
 
@@ -21,7 +20,7 @@ router.post("/", async (req, res) => {
     if (!token) {
       token = await new TokenModel({
         userId: user._id,
-        token: crypto.randomBytes(32).toString("hex"),
+        token: await user.generateAuthToken(),
       }).save();
     }
 

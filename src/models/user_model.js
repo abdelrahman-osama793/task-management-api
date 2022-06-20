@@ -92,7 +92,7 @@ userSchema.methods.generateAuthToken = async function () {
   const user = this;
 
   // sign() function takes two variables the first one is the data that is going to be embedded in the token and the other is the string that is going to be encrypted 
-  const token = jwt.sign({ _id: user._id.toString() }, "thisistest");
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.TOKENSTRING);
 
   user.tokens = user.tokens.concat({ token });
   await user.save();
