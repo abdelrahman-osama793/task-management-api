@@ -4,6 +4,7 @@ const auth = require("../middleware/auth");
 const multer = require("multer");
 const sharp = require("sharp");
 const router = express.Router();
+const sendEmail = require("../utils/sendEmail");
 const {
   signupView,
   loginView,
@@ -12,6 +13,8 @@ const {
   userProfileView,
   updateUserProfileView,
   deleteProfileView,
+  sendResetPasswordEmailView,
+  resetPasswordView,
 } = require("../controllers/user_controller");
 
 router.post("/signup", signupView);
@@ -27,6 +30,10 @@ router.get("/profile", auth, userProfileView);
 router.patch("/profile", auth, updateUserProfileView);
 
 router.delete("/profile", auth, deleteProfileView);
+
+router.post("/reset-password", sendResetPasswordEmailView);
+
+router.post("/reset-password/:userId/:token", resetPasswordView);
 
 const upload = multer({
   // dest: "avatars",
