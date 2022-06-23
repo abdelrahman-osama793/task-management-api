@@ -71,7 +71,7 @@ const updateUserProfileView = async (req, res) => {
     requiredUpdates.forEach((update) => (user[update] = req.body[update]));
     await user.save();
 
-    res.status(200).send(user);
+    res.status(200).send({message: "Updated Successfully" ,user});
   } catch (e) {
     res.status(400).send(e);
   }
