@@ -7,7 +7,7 @@ const signupView = async (req, res) => {
     res.status(201).send({ message: "Account created successfully", user });
   } catch (e) {
     if (e.code === 11000 && e.keyPattern.email === 1)
-      res.status(400).send({ message: "Email Already exists" });
+    res.status(400).send({ message: "Email Already exists" });
   }
 };
 
