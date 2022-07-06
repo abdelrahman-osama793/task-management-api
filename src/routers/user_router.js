@@ -36,13 +36,13 @@ router.post("/reset-password", sendResetPasswordEmailView);
 router.post("/reset-password/:userId/:token", resetPasswordView);
 
 const upload = multer({
-  // dest: "avatars",
+  dest: "avatars",
   limits: {
     fileSize: 2500000,
   },
   fileFilter(req, file, cb) {
     if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      return cb(new Error("Please upload an image"));
+      return cb(new Error("Please upload an image with a valid format (jpg, jpeg, png)"));
     }
     cb(undefined, true);
   },

@@ -18,25 +18,39 @@ const addTask = async (req, res) => {
 const getAllTasks = async (req, res) => {
     const match = {};
     const sort = {};
+    let meta = {};
+    let tasks = {};
+    let total
+    const limit = req.query.limit ? parseInt(req.query.limit) : 0
+    const page = req.query.page ? parseInt(req.query.page) : 1
+    const pageOffset = page - 1
 
     if (req.query.completed) {
         match.completed = req.query.completed === "true";
     }
 
     if (req.query.sortBy) {
+        /* 
+            Get the sortBy from the url and then split it into 2 parts
+            the first part is the field I will sort with
+            the second part is the desc or asc
+            if it is desc it will be true and value will be -1 
+            if not it will be false and the value will 1 which means asc
+        */
         const parts = req.query.sortBy.split(":");
         sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
     }
 
     try {
-        // const tasks = await TaskModel.find({ owner: req.user._id });
+        total = await TaskModel.countDocuments({ owner: req.user._id, completed: req.query.completed })
+        console.log(total)
         await req.user
             .populate({
                 path: "tasks",
                 match,
                 options: {
-                    limit: parseInt(req.query.limit),
-                    skip: parseInt(req.query.skip),
+                    limit, //PageSize
+                    skip: pageOffset * limit, // Offset
                     sort,
                     //  {
                     //   1 is ascending and -1 is descending
@@ -46,12 +60,21 @@ const getAllTasks = async (req, res) => {
                 },
             })
             .execPopulate();
-        let tasks = req.user.tasks
+
+        tasks = req.user.tasks
+        meta = {
+            pagination: {
+                page: req.query.page ? parseInt(req.query.page) : 1, // Page Number
+                pageSize: req.query.limit ? parseInt(req.query.limit) : total,
+                total
+            }
+        }
         if (tasks.length === 0) {
             return res.status(404).send({ message: `No tasks found, let's create new one` })
         }
-        res.status(200).send(tasks);
+        res.status(200).send({ tasks, meta });
     } catch (e) {
+        console.log(e)
         res.status(500).send(e);
     }
 }
